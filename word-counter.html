@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>免費線上字數統計 | 精確計算純文字、字元與行數</title>
+    <style>
+        /* CSS 樣式與之前相同，保持不變 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            line-height: 1.5;
+            box-sizing: border-box; 
+            resize: vertical;
+        }
+        .results {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .stat {
+            text-align: center;
+            /* 讓欄位寬度更平均 */
+            flex-basis: 33.3%;
+            padding: 0 5px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🚀 線上字數統計工具</h1>
+        <p style="text-align: center; color: #555;">在下方欄位貼上您的文字，系統將自動即時計算。</p>
+        
+        <textarea id="textInput" placeholder="在這裡輸入或貼上您的文字...
+"></textarea>
+        
+        <div class="results">
+            <div class="stat">
+                <span id="charCount" class="stat-value">0</span>
+                <div class="stat-label">總字元 (含空白)</div>
+            </div>
+            <div class="stat">
+                <span id="pureWordCount" class="stat-value">0</span>
+                <div class="stat-label">純文字 (不含符號/數字)</div>
+            </div>
+            <div class="stat">
+                <span id="lineCount" class="stat-value">0</span>
+                <div class="stat-label">行數</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 取得我們要操作的 HTML 元素
+        const textInput = document.getElementById('textInput');
+        const charCountEl = document.getElementById('charCount');
+        const pureWordCountEl = document.getElementById('pureWordCount'); // 更改了 ID 名稱
+        const lineCountEl = document.getElementById('lineCount');
+
+        textInput.addEventListener('input', () => {
+            const text = textInput.value;
+
+            // 1. 計算總字元數 (含空白) - 邏輯不變
+            const charCount = text.length;
+            charCountEl.innerText = charCount;
+
+            // ----------------------------------------------------
+            // ⭐️ JavaScript 修正點 (v3)：
+            // ----------------------------------------------------
+            // 2. 計算純文字數 (不含空白、標點、數字等)
+            //    使用 /[^\p{L}]/gu
+            //    [^...]  代表「非」
+            //    \p{L}   代表「任何 Unicode 字母」(Letter)
+            //    g       代表 "global" (全域)
+            //    u       代表 "unicode" (必須加，\p{L} 才能運作)
+            //
+            //    這行程式碼的意思是：「移除所有不是字母的字元」，然後計算長度。
+            const pureCharCount = text.replace(/[^\p{L}]/gu, '').length;
+            pureWordCountEl.innerText = pureCharCount;
+            // ----------------------------------------------------
+
+            // 3. 計算行數 - 邏輯不變
+            let lineCount = 0;
+            if (text === "") {
+                lineCount = 0;
+            } else {
+                lineCount = text.split('\n').length;
+            }
+            lineCountEl.innerText = lineCount;
+        });
+    </script>
+
+</body>
+</html>
