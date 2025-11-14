@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>免費線上文字取代 | 快速尋找並取代字串</title>
+    <style>
+        /* 1. 基本的 CSS 樣式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            line-height: 1.5;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        .controls {
+            display: grid;
+            /* 兩欄式佈局 */
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .control-group label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        .control-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .options {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .options input[type="checkbox"] {
+            margin-right: 8px;
+            /* 讓勾選框大一點 */
+            transform: scale(1.2);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background-color: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        #resultMessage {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+            color: #007bff;
+            min-height: 1.2em; /* 預留一行空間，避免跳動 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔍 線上尋找與取代</h1>
+        
+        <textarea id="textInput" placeholder="在這裡輸入或貼上您的原文..."></textarea>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="findInput">尋找 (Find):</label>
+                <input type="text" id="findInput">
+            </div>
+            <div class="control-group">
+                <label for="replaceInput">取代 (Replace):</label>
+                <input type="text" id="replaceInput">
+            </div>
+        </div>
+
+        <div class="options">
+            <input type="checkbox" id="caseSensitiveCheck">
+            <label for="caseSensitiveCheck">區分大小寫 (Case Sensitive)</label>
+        </div>
+
+        <button id="replaceButton" class="btn">全部取代</button>
+        
+        <div id="resultMessage"></div>
+    </div>
+
+    <script>
+        // 3. JavaScript 核心邏輯
+        
+        // 取得所有 HTML 元素
+        const textInput = document.getElementById('textInput');
+        const findInput = document.getElementById('findInput');
+        const replaceInput = document.getElementById('replaceInput');
+        const caseSensitiveCheck = document.getElementById('caseSensitiveCheck');
+        const replaceButton = document.getElementById('replaceButton');
+        const resultMessage = document.getElementById('resultMessage');
+
+        // 這是用來「跳脫」正規表達式特殊字元的輔助函式
+        // 避免使用者輸入的 "find" 內容 (例如 ".") 被當成正規表達式
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+        }
+
+        // 監聽取代按鈕的點擊事件
+        replaceButton.addEventListener('click', () => {
+            const originalText = textInput.value;
+            const findText = findInput.value;
+            const replaceText = replaceInput.value;
+            const isCaseSensitive = caseSensitiveCheck.checked;
+
+            if (findText === "") {
+                resultMessage.textContent = "請輸入要尋找的文字。";
+                resultMessage.style.color = "#dc3545"; // 紅色
+                return;
+            }
+
+            // --- 核心邏輯 ---
+            try {
+                // 1. 決定正規表達式的旗標 (flags)
+                // 'g' 代表 "global"，取代所有符合的
+                let flags = 'g';
+                if (!isCaseSensitive) {
+                    // 如果「不」區分大小寫，就加上 'i' (ignore case)
+                    flags += 'i';
+                }
+
+                // 2. 建立正規表達式物件
+                // 我們必須使用 escapeRegExp 來處理使用者輸入的 'findText'
+                const regex = new RegExp(escapeRegExp(findText), flags);
+
+                // 3. (額外) 計算符合的數量
+                const matches = originalText.match(regex);
+                const matchCount = matches ? matches.length : 0;
+
+                // 4. 執行取代
+                const newText = originalText.replace(regex, replaceText);
+
+                // 5. 更新內容並顯示成功訊息
+                textInput.value = newText;
+                resultMessage.textContent = `成功取代了 ${matchCount} 筆資料！`;
+                resultMessage.style.color = "#007bff"; // 藍色
+
+            } catch (error) {
+                // 處理可能的錯誤 (例如正規表達式無效)
+                resultMessage.textContent = "發生錯誤：" + error.message;
+                resultMessage.style.color = "#dc3545"; // 紅色
+            }
+        });
+
+        // 偵測到使用者重新輸入時，清除訊息
+        textInput.addEventListener('input', () => {
+            resultMessage.textContent = "";
+        });
+        findInput.addEventListener('input', () => {
+            resultMessage.textContent = "";
+        });
+
+    </script>
+
+</body>
+</html>
