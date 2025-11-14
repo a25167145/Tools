@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>免費線上小工具集合 | My Cool Tools</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .header h1 {
+            font-size: 40px;
+            color: #0056b3;
+            margin: 0;
+        }
+        .header p {
+            font-size: 18px;
+            color: #555;
+        }
+        .tool-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            /* 讓網格自動調整欄位數 */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; /* 項目之間的間距 */
+        }
+        .tool-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-decoration: none; /* 移除連結的底線 */
+            color: #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .tool-card h2 {
+            font-size: 20px;
+            color: #007bff;
+            margin-top: 0;
+        }
+        .tool-card p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🚀 我的線上小工具集合</h1>
+        <p>提供各種免費、實用的線上工具，解決您的日常小問題。</p>
+    </div>
+
+    <div class="tool-grid">
+        
+        <a href="./word-counter.html" class="tool-card">
+            <h2>字數統計</h2>
+            <p>即時計算您的文章字數、純文字數 (不含標點符號)、字元數與行數。</p>
+        </a>
+
+        <a href="./case-converter.html" class="tool-card">
+            <h2>大小寫轉換</h2>
+            <p>一鍵將英文文本轉換為全大寫、全小寫、句首大寫或單字首字大寫。</p>
+        </a>
+        
+        </div>
+
+</body>
+</html>
